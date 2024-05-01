@@ -1,0 +1,57 @@
+version: "3"
+
+services:
+  influxdb:
+    build:
+      context: .
+      dockerfile: ./docker/influxdb.dockerfile
+    container_name: influxdb
+    ports:
+      - "8086:8086"
+    environment:
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=password
+      - MYSQL_DATABASE=mydb
+      - INFLUXDB_HOST=influxdb
+      - INFLUXDB_PORT=8086
+      - INFLUXDB_USER=user
+      - INFLUXDB_PASSWORD=password
+      - INFLUXDB_DATABASE=mydb
+
+  mysql:
+    build:
+      context: .
+      dockerfile: ./docker/mysql.dockerfile
+    container_name: mysql
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_DATABASE=mydb
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=password
+
+  mosquitto:
+    build:
+      context: .
+      dockerfile: ./docker/mosquitto.dockerfile
+    container_name: mosquitto
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./config:/mosquitto/config
+
+  data-processor:
+    build:
+      context: .
+      dockerfile: ./docker/python.dockerfile
+    container_name: python
+    depends_on:
+      - influxdb
+      - mysql
+      - mosquitto
+    volumes:
+      - ./scripts/:/app/
