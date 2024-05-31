@@ -5,10 +5,10 @@ services:
     build:
       context: .
       dockerfile: ./docker/mosquitto.dockerfile
-    container_name: mosquitto
+    container_name: ${BROKER_CONTAINER_NAME}
     ports:
-      - "1883:1883"
-      - "9001:9001"
+      - "${BROKER_MQTT_PORT}:1883"
+      - "${BROKER_WS_PORT}:9001"
     volumes:
       - ./config:/mosquitto/config
 
@@ -23,6 +23,24 @@ services:
       - .env
     environment:
       - BACKEND_URL=${BACKEND_URL}
-      - TOPIC_1=${TOPIC_1}
+      - ID_ESTACION=${ID_ESTACION}
+      - PUBLIC_IP_URL=${PUBLIC_IP_URL}
+      - BROKER_ADDRES=${BROKER_CONTAINER_NAME}
+    volumes:
+      - .:/app/
+
+  publisher:
+    build:
+      context: .
+      dockerfile: ./docker/publisher.dockerfile
+    container_name: publisher
+    depends_on:
+      - mosquitto
+    env_file:
+      - .env
+    environment:
+      - TOPIC_TEMPLATE=${TEST_TOPIC}
+      - BROKER_ADDRES=${BROKER_CONTAINER_NAME}
+      - BROKER_MQTT_PORT=${BROKER_MQTT_PORT}
     volumes:
       - .:/app/
