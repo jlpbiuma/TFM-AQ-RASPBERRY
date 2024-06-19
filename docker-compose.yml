@@ -42,5 +42,6 @@ services:
       - TOPIC_TEMPLATE=${TEST_TOPIC}
       - BROKER_ADDRES=${BROKER_CONTAINER_NAME}
       - BROKER_MQTT_PORT=${BROKER_MQTT_PORT}
+      - DATA_FREQUENCY=${DATA_FREQUENCY}
     volumes:
       - .:/app/

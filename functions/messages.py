@@ -17,7 +17,7 @@ def on_message(client, userdata, msg):
         # Send POST request to the backend
         response = requests.post(BACKEND_URL, json=payload)
         # Check if the request was successful
-        if response.status_code == 200:
+        if response.status_code == 201:
             print("Message sent to backend successfully")
         else:
             print("Failed to send message to backend. Status code:", response.status_code)
